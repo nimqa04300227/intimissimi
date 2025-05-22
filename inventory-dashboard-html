@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inventory Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f4f4f4;
+    }
+    header {
+      background: #333;
+      color: #fff;
+      padding: 1rem;
+      text-align: center;
+    }
+    main {
+      padding: 2rem;
+    }
+    form {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    input, button {
+      padding: 0.5rem;
+      font-size: 1rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 0.75rem;
+      text-align: left;
+    }
+    th {
+      background: #f0f0f0;
+    }
+    button.delete {
+      background: red;
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Inventory Dashboard</h1>
+  </header>
+
+  <main>
+    <section id="add-product">
+      <h2>Add New Product</h2>
+      <form id="product-form">
+        <input type="text" id="brand" placeholder="Brand" required />
+        <input type="text" id="name" placeholder="Product Name" required />
+        <input type="text" id="size" placeholder="Size" required />
+        <input type="text" id="color" placeholder="Color" required />
+        <input type="text" id="category" placeholder="Category" required />
+        <input type="number" id="quantity" placeholder="Quantity" required />
+        <input type="number" id="price" placeholder="Price" required />
+        <button type="submit">Add Product</button>
+      </form>
+    </section>
+
+    <section id="product-list">
+      <h2>Product Inventory</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Brand</th>
+            <th>Name</th>
+            <th>Size</th>
+            <th>Color</th>
+            <th>Category</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="inventory-body">
+          <!-- Product rows go here -->
+        </tbody>
+      </table>
+    </section>
+  </main>
+
+  <script>
+    const form = document.getElementById('product-form');
+    const inventoryBody = document.getElementById('inventory-body');
+
+    let products = JSON.parse(localStorage.getItem('inventory')) || [];
+
+    function renderInventory() {
+      inventoryBody.innerHTML = '';
+      products.forEach((product, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${product.brand}</td>
+          <td>${product.name}</td>
+          <td>${product.size}</td>
+          <td>${product.color}</td>
+          <td>${product.category}</td>
+          <td>${product.quantity}</td>
+          <td>$${product.price}</td>
+          <td><button class="delete" onclick="deleteProduct(${index})">Delete</button></td>
+        `;
+        inventoryBody.appendChild(row);
+      });
+    }
+
+    function deleteProduct(index) {
+      products.splice(index, 1);
+      localStorage.setItem('inventory', JSON.stringify(products));
+      renderInventory();
+    }
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const newProduct = {
+        brand: document.getElementById('brand').value,
+        name: document.getElementById('name').value,
+        size: document.getElementById('size').value,
+        color: document.getElementById('color').value,
+        category: document.getElementById('category').value,
+        quantity: document.getElementById('quantity').value,
+        price: document.getElementById('price').value,
+      };
+      products.push(newProduct);
+      localStorage.setItem('inventory', JSON.stringify(products));
+      form.reset();
+      renderInventory();
+    });
+
+    renderInventory();
+  </script>
+</body>
+</html>
